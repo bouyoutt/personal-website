@@ -19,16 +19,11 @@ pnpm preview
 
 - `src/content/profileData.ts`：个人信息、服务、流程、外链与模块开关。
 - `src/components/sections/Services.astro`：服务与合作流程。
-- `../../platforms/fiverr/`：简介、Gig 文案与历史。
-- `../../profile/tech-stack.md`：已确认能力与待确认信息。
-- `changes.md`：本地开发、内容、素材、构建和部署历史，不进入子仓库。
-- `../../profile/changes.md`：父工作区中的个人资料记录，单独克隆本项目时不包含。
+- `changes.md`：本地开发、内容、素材、构建和部署历史，不进入公开仓库。
 
-2026-10-21 已回补昨天的 Fiverr 内容；套餐价格和交付时间保存在本地 Gig 档案，线上状态待核实。此次未部署网站，未修改 Fiverr。
+头像是 AI 工作台插画。域名和对外邮箱待补充。未使用的模板示例内容和图片已清理，目前保留 PixPage 与首篇博客的中英文内容；只有显式设置 `published: true` 的内容才生成公开详情页。
 
-头像是 AI 工作台插画。域名、邮箱和个人仓库地址待补充。未使用的模板示例内容和图片已清理，目前保留 PixPage 与首篇博客的中英文内容；只有显式设置 `published: true` 的内容才生成公开详情页。
-
-独立公开仓库：[bouyoutt/personal-website](https://github.com/bouyoutt/personal-website)。父工作区通过 Git submodule 关联本项目。
+独立公开仓库：[bouyoutt/personal-website](https://github.com/bouyoutt/personal-website)。
 
 ## 部署配置
 
@@ -72,9 +67,7 @@ pnpm preview
 
 ## 独立仓库文件范围
 
-提交网站源码、当前素材、包管理锁文件、构建配置、通用基础设施模板及校验/生成脚本。`DEPLOY.md`、`changes.md`、`infra/validation/` 和临时 EC2 验证模板仅保留本地；依赖、构建产物、截图、编辑器配置、运行环境与凭据文件均忽略。已进入父仓库历史的内容不会因新增忽略规则从历史中消失。
-
-项目通过父工作区的 Git submodule 管理；单独克隆时，父目录中的个人资料和 Fiverr 文件不属于本项目交付内容。
+提交网站源码、当前素材、包管理锁文件、构建配置、通用基础设施模板及校验/生成脚本。`DEPLOY.md`、`changes.md`、`infra/validation/` 和临时 EC2 验证模板仅保留本地；依赖、构建产物、截图、编辑器配置、运行环境与凭据文件均忽略。已进入 Git 历史的内容不会因新增忽略规则从历史中消失。
 
 ## 提交前的信息安全检查
 
