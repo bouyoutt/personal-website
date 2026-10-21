@@ -48,3 +48,28 @@ __pycache__/
 /output/
 /playwright-report/
 /test-results/
+
+# Private operational notes and security reports
+changes.md
+DEPLOY.md
+.local/
+security-reports/
+backups/
+
+# Credentials and local infrastructure state
+.aws/
+.ssh/
+.kube/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_ed25519
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.kubeconfig
