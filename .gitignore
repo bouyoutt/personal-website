@@ -73,3 +73,6 @@ id_ed25519
 *.tfvars
 !*.tfvars.example
 *.kubeconfig
+
+# Local agent instructions
+AGENTS.md
