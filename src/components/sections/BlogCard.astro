@@ -1,0 +1,45 @@
+---
+import PreviewList from "../PreviewList.astro";
+import { getCollection } from "@/lib/published-content";
+
+interface Props {
+  lang?: "zh" | "en";
+}
+
+const { lang = "zh" } = Astro.props;
+
+let allPosts = await getCollection("posts");
+
+let posts = allPosts.filter((p: any) => {
+  if (p.data.lang) {
+    return p.data.lang === lang;
+  }
+  return lang === "zh";
+});
+
+posts.sort((a: any, b: any) => {
+  return (
+    new Date(b.data.startDate).getTime() - new Date(a.data.startDate).getTime()
+  );
+});
+
+posts = posts.slice(0, 3);
+---
+
+<PreviewList
+  id="blog"
+  lang={lang}
+  items={posts.map((post, index) => ({
+    title: post.data.title,
+    description: post.data.description,
+    href: `${lang === "en" ? "/en" : ""}/posts/${post.slug}`,
+    tags: post.data.tags,
+    date: post.data.startDate,
+    latest: index === 0,
+  }))}
+  allHref={lang === "en" ? "/en/posts" : "/posts"}
+  allLabel={lang === "en" ? "Read all posts →" : "查看全部文章 →"}
+  emptyLabel={lang === "en"
+    ? "More updates coming soon."
+    : "文章整理中，敬请期待..."}
+/>

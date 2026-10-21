@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Singapore private S3 origin for the personal website, retaining all release artifacts.
+Metadata:
+  AWSToolsMetrics:
+    AWSAgentToolkit: aws-cloudformation@3
+  com.aws.cloudformation.Context:
+    arch: Singapore private S3; us-east-1 edge-free.yaml manages delivery, WAF and the FREE plan.
+    must:
+      - Deploy this template in ap-southeast-1.
+      - Retain the private encrypted bucket and all historical releases.
+    ref:
+      - at: ../DEPLOY.md
+        has: Two-region release sequence and remaining usage costs.
+Parameters:
+  CloudFrontDistributionArn:
+    Type: String
+    Default: ''
+    AllowedPattern: '^$|^arn:aws:cloudfront::[0-9]{12}:distribution/[A-Z0-9]+$'
+    Description: Empty for initial creation; use the edge stack DistributionArn output after the FREE plan is active.
+Conditions:
+  HasDistribution: !Not [!Equals [!Ref CloudFrontDistributionArn, '']]
+Resources:
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Stores rebuildable website artifacts; versioning supports recovery without deleting files.
+        must: [Keep private and encrypted; retain on removal and replacement.]
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Origin starts inaccessible; grant reads only to the exact approved edge distribution.
+        must: [Deny insecure transport; never grant anonymous reads.]
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - !If
+            - HasDistribution
+            - Sid: CloudFrontReadOnly
+              Effect: Allow
+              Principal:
+                Service: cloudfront.amazonaws.com
+              Action: s3:GetObject
+              Resource: !Sub '${SiteBucket.Arn}/*'
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Ref CloudFrontDistributionArn
+            - !Ref AWS::NoValue
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: s3:*
+            Resource:
+              - !GetAtt SiteBucket.Arn
+              - !Sub '${SiteBucket.Arn}/*'
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+Outputs:
+  BucketName:
+    Description: Private Singapore origin bucket.
+    Value: !Ref SiteBucket
+  BucketRegionalDomainName:
+    Description: Regional REST origin; never use the website hosting endpoint.
+    Value: !GetAtt SiteBucket.RegionalDomainName

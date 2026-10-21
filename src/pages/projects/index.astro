@@ -1,0 +1,46 @@
+---
+import ProjectCard from 'src/components/ProjectCard.astro'
+import { getCollection } from "@/lib/published-content";
+import IndexPageLayout from "../../layouts/IndexPageLayout.astro";
+
+// read mdx files from projects folder
+const allProjects = await getCollection('projects');
+
+// 优先展示中文项目或独立作品
+const projects = allProjects.filter((p: any) => p.data.lang !== 'en');
+
+// sort projects by startDate DESC
+projects.sort((a: any, b: any) => {
+  return new Date(b.data.startDate ?? 0).getTime() - new Date(a.data.startDate ?? 0).getTime();
+});
+---
+
+<IndexPageLayout 
+  title="精选作品与项目" 
+  description="独立开发、技术实验与代表性开源工具作品。" 
+  subTitle="作品展示"
+  lang="zh"
+>
+  {
+    projects.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {projects.map((entity: any) => (
+          <ProjectCard
+            key={entity.data.title}
+            href={'/projects/' + entity.slug}
+            heading={entity.data.title}
+            subheading={entity.data.description}
+            altText={entity?.data?.image?.alt}
+            imagePath={entity?.data?.image?.url}
+            dateStart={entity.data.startDate}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-xl border bg-card p-12 text-center text-muted-foreground shadow-sm">
+        <p class="text-lg font-medium text-foreground">作品集打磨整理中</p>
+        <p class="text-sm mt-2 text-muted-foreground">更多高质量的全栈、后端与 Chrome 扩展作品即将上线展示，敬请期待！</p>
+      </div>
+    )
+  }
+</IndexPageLayout>

@@ -1,0 +1,141 @@
+---
+import { Button } from '../ui/button'
+import { getProfile } from "../../content/profileData";
+import { Github, Mail, Linkedin, Server, Layout, Bot, Zap, Chrome, ExternalLink } from 'lucide-react'
+import { TelegramIcon, XIcon } from '../icons/SocialIcons'
+import { WeChatContact } from '../react/WeChatContact'
+
+interface Props {
+  lang?: 'zh' | 'en';
+}
+
+const { lang = 'zh' } = Astro.props;
+const profile = getProfile(lang);
+
+const icons = [Server, Layout, Chrome, Bot, Zap];
+---
+
+<div class="flex h-full w-full justify-between items-center animate-appear gap-6">
+  <div class="flex flex-col justify-between h-full py-1 gap-4">
+    <div class="flex flex-col">
+      <p class="m-0 text-2xl font-light">
+        {lang === 'en' ? (
+          <>Hi, I'm <b class="font-bold text-primary">{profile.name}</b> 👋</>
+        ) : (
+          <>你好，我是 <b class="font-bold text-primary">{profile.name}</b> 👋</>
+        )}
+      </p>
+      <ul class="pt-3.5 space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-muted-foreground">
+        {profile.shortIntros.map((intro, index) => {
+          const Icon = icons[index % icons.length];
+          return (
+            <li class="flex items-center gap-2.5">
+              <span class="flex items-center justify-center p-1 rounded-md bg-secondary text-primary shrink-0">
+                <Icon className="h-3.5 w-3.5" />
+              </span>
+              <span class="leading-normal">{intro}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+
+    <!-- 中部：当前工作状态与合作定位胶囊 -->
+    <div class="flex flex-col gap-2 my-auto py-1">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium w-fit shadow-xs">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span>
+          {lang === 'en' 
+            ? 'Open to technical exchange & indie projects' 
+            : '独立开发进行中 · 开放技术交流与项目合作'}
+        </span>
+      </div>
+    </div>
+    
+    <!-- 底部：社交与联系方式 (对标参考站设计规范: 实体主题色按钮 + 24px 饱满大图标) -->
+    <div class="pt-3 border-t border-dashed border-border/70">
+      <p class="text-[11px] font-medium text-muted-foreground mb-2.5">
+        {lang === 'en' ? 'Get in touch & social profiles:' : '社交平台与即时联系:'}
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+      {profile.links?.telegram && (
+        <a 
+          href={profile.links.telegram} 
+          aria-label="Telegram Profile" 
+          title="Telegram: @bouyoutt"
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          <Button aria-label="Telegram Profile">
+            <TelegramIcon className="h-6 w-6" />
+            <span class="sr-only">Telegram</span>
+          </Button>
+        </a>
+      )}
+
+      {(profile.links?.x || profile.links?.twitter) && (
+        <a 
+          href={profile.links.x || profile.links.twitter} 
+          aria-label="X (Twitter) Profile" 
+          title="X (Twitter): @bouyoutt"
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          <Button aria-label="X (Twitter) Profile">
+            <XIcon className="h-6 w-6" />
+            <span class="sr-only">X (Twitter)</span>
+          </Button>
+        </a>
+      )}
+
+        {profile.links?.github && (
+          <a 
+            href={profile.links.github} 
+            aria-label="GitHub Profile" 
+            title="GitHub: @bouyoutt"
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <Button aria-label="GitHub Profile">
+              <Github className="h-6 w-6" />
+              <span class="sr-only">GitHub</span>
+            </Button>
+          </a>
+        )}
+
+        {profile.links?.wechat && (
+          <WeChatContact 
+            client:load 
+            wechatId={profile.links.wechat} 
+            qrCode={profile.links.wechatQrCode} 
+            lang={lang} 
+          />
+        )}
+
+      {profile.links?.email && (
+        <a 
+          href={profile.links.email} 
+          aria-label="Send Email"
+          title="Send Email"
+        >
+          <Button aria-label="Send Email">
+            <Mail className="h-6 w-6" />
+            <span class="sr-only">Email</span>
+          </Button>
+        </a>
+      )}
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden sm:flex flex-shrink-0 items-center justify-center pr-2">
+    <img
+      src={profile.avatarUrl}
+      class="h-32 w-32 md:h-36 md:w-36 rounded-2xl object-cover shadow-md border hover:scale-105 transition-transform duration-300"
+      alt="Developer Workstation Avatar"
+    />
+  </div>
+</div>

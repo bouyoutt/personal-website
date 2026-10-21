@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import IntroCard from '../../components/sections/IntroCard.astro'
+import AboutMe from '../../components/sections/AboutMe.astro'
+import Card from '../../components/Card.astro'
+import TimeZoneCard from '../../components/sections/TimeZoneCard.astro'
+import Books from '../../components/sections/Books.astro'
+import ExperienceCard from '../../components/sections/ExperienceCard.astro'
+import Projects from '../../components/sections/Projects.astro'
+import StudyCard from '../../components/sections/StudyCard.astro'
+import BlogCard from '../../components/sections/BlogCard.astro'
+import Contact from '../../components/sections/Contact.astro'
+import Recommendations from '../../components/sections/Recommendations.astro'
+import QuoteCard from '../../components/sections/QuoteCard.astro'
+import { getProfile } from "../../content/profileData";
+import { useTranslations } from "../../i18n/utils";
+
+const lang = 'en';
+const profile = getProfile(lang);
+const SITE = profile.site;
+const sections = profile.sections;
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  title={SITE.SEO.title}
+  description={SITE.SEO.description}
+  lang={lang}
+>
+  <main
+    transition:animate="fade"
+    class="relative m-auto grid w-full max-w-6xl gap-4 p-3 sm:p-4 md:grid-cols-2 lg:grid-cols-12 items-stretch"
+  >
+    {/* 1. Intro Card (Hero) */}
+    {sections.intro && (
+      <Card colSpan="lg:col-span-8 md:col-span-2">
+        <IntroCard lang={lang} />
+      </Card>
+    )}
+
+    {/* 2. About & Skills */}
+    {sections.about && (
+      <Card colSpan="lg:col-span-4 md:col-span-1" title={t('section.about')}>
+        <AboutMe lang={lang} />
+      </Card>
+    )}
+
+    {/* 3. Toolbox & Recommendations */}
+    {sections.recommendations && (
+      <Card colSpan="lg:col-span-12 md:col-span-2" title={t('section.recommendations')}>
+        <Recommendations lang={lang} />
+      </Card>
+    )}
+
+    {/* 4. Featured Projects & Chrome Extension */}
+    {sections.projects && (
+      <Card colSpan="lg:col-span-6 md:col-span-1" title={t('section.projects')}>
+        <Projects lang={lang} />
+      </Card>
+    )}
+
+    {/* 5. Blog & Notes */}
+    {sections.blog && (
+      <Card 
+        colSpan={sections.projects ? "lg:col-span-6 md:col-span-1" : "lg:col-span-7 md:col-span-1"} 
+        title={t('section.blog')}
+      >
+        <BlogCard lang={lang} />
+      </Card>
+    )}
+
+    {/* 6. Connect & Social Links */}
+    {sections.contact && (
+      <Card 
+        colSpan="lg:col-span-6 md:col-span-1" 
+        title={t('section.contact')}
+      >
+        <Contact lang={lang} />
+      </Card>
+    )}
+
+    {/* 7. Dual Timezone Clocks */}
+    {sections.timezones && (
+      <>
+        <Card colSpan="lg:col-span-3 md:col-span-1" title={t('section.visitorTime')}>
+          <TimeZoneCard/>
+        </Card>
+        <Card colSpan="lg:col-span-3 md:col-span-1" title={t('section.localTime')}>
+          <TimeZoneCard timezone={profile.timezone} />
+        </Card>
+      </>
+    )}
+
+    {/* 8. Quotes & Inspiration */}
+    {sections.quote && (
+      <Card colSpan={sections.timezones && !sections.contact ? "lg:col-span-6 md:col-span-2" : "lg:col-span-12 md:col-span-2"}>
+        <QuoteCard lang={lang} />
+      </Card>
+    )}
+
+    {/* 9. Experience */}
+    {sections.experiences && (
+      <Card colSpan="lg:col-span-6 md:col-span-1" title={t('section.experiences')}>
+        <ExperienceCard/>
+      </Card>
+    )}
+
+    {/* 10. Education */}
+    {sections.studies && (
+      <Card colSpan="lg:col-span-6 md:col-span-1" title={t('section.studies')}>
+        <StudyCard/>
+      </Card>
+    )}
+
+    {/* 11. Reading List */}
+    {sections.books && (
+      <Card colSpan="lg:col-span-6 md:col-span-1" title={t('section.books')}>
+        <Books/>
+      </Card>
+    )}
+  </main>
+</BaseLayout>

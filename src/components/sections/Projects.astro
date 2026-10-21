@@ -1,0 +1,48 @@
+---
+import PreviewList from "../PreviewList.astro";
+import { getCollection } from "@/lib/published-content";
+
+interface Props {
+  lang?: "zh" | "en";
+}
+
+const { lang = "zh" } = Astro.props;
+
+let allProjects = await getCollection("projects");
+
+// 按语言筛选对应项目，如果无标记则默认展示
+let projects = allProjects.filter((p: any) => {
+  if (p.data.lang) {
+    return p.data.lang === lang;
+  }
+  return lang === "zh";
+});
+
+// 按发布时间降序排序
+projects.sort((a: any, b: any) => {
+  return (
+    new Date(b.data.startDate ?? 0).getTime() -
+    new Date(a.data.startDate ?? 0).getTime()
+  );
+});
+
+projects = projects.slice(0, 3);
+---
+
+<PreviewList
+  id="projects"
+  lang={lang}
+  items={projects.map((project, index) => ({
+    title: project.data.title,
+    description: project.data.description,
+    href: `${lang === "en" ? "/en" : ""}/projects/${project.slug}`,
+    tags: project.data.tags,
+    date: project.data.startDate,
+    externalUrl: project.data.link,
+  }))}
+  allHref={lang === "en" ? "/en/projects" : "/projects"}
+  allLabel={lang === "en" ? "View all projects →" : "查看更多作品 →"}
+  emptyLabel={lang === "en"
+    ? "More updates coming soon."
+    : "作品集打磨整理中，敬请期待..."}
+/>

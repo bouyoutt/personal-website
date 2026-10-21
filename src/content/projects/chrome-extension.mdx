@@ -1,0 +1,58 @@
+---
+published: true
+title: "PixPage · 智能元素拾取助手"
+description: "选中网页元素，把选择器、页面位置和相关信息一起复制给 AI。一个用来沟通页面问题、辅助调试的 Chrome 扩展。"
+image:
+  url: "/images/projects/pixpage/biker-cover.webp"
+  alt: "PixPage 项目封面：山地骑手跃起"
+tags: ["Chrome Extension", "Manifest V3", "TypeScript", "AI Tooling", "Testing"]
+link: "https://chromewebstore.google.com/detail/pixpage-%E6%99%BA%E8%83%BD%E5%85%83%E7%B4%A0%E6%8B%BE%E5%8F%96%E5%8A%A9%E6%89%8B/dfoocadjojfjdopgjjdjobgldkffopnm"
+lang: "zh"
+---
+
+页面上有个地方想改，怎么告诉 AI 你指的是哪一个？
+
+只说“右边那张卡片”不太准确。截图能说明大致位置，但如果还要改代码，往往又得去找对应的元素、复制选择器，再补一句它属于哪个容器。
+
+PixPage 就是用来整理这些信息的。选中网页上的元素，把它的位置、文本、属性和候选定位器放到一份 Markdown 上下文里，再带上你想问的问题，复制出去。
+
+[在 Chrome 商店查看与安装 PixPage](https://chromewebstore.google.com/detail/pixpage-%E6%99%BA%E8%83%BD%E5%85%83%E7%B4%A0%E6%8B%BE%E5%8F%96%E5%8A%A9%E6%89%8B/dfoocadjojfjdopgjjdjobgldkffopnm)
+
+## 比如，想改一张卡片
+
+假设网页里有一张名言卡片，你觉得进度条离标题太近，想让它往上挪一点。
+
+用 PixPage 选中这张卡片后，复制出来的信息会包含当前页面地址、元素文本、所属容器、CSS 选择器、Playwright 定位器，以及元素的位置和尺寸。
+
+在这些信息后面补上自己的要求就行：
+
+> 这个地方有一个进度条，让它上去一点。
+
+这样，接手排查的人或 AI 能更快找到你说的位置。如果是本地开发页面，上下文里也可能带有框架输出的源文件属性，方便继续查找对应代码。
+
+这些信息提供的是定位线索。具体改哪段代码、怎么改，仍然要结合项目来看。
+
+## 几个地方有关联，也可以一起选
+
+有时问题不只涉及一个元素。比如想比较作品卡片和博客卡片的间距，或者确认两个入口的内容从哪里来。
+
+PixPage 支持选中多个元素，把它们按顺序整理到同一份上下文里。每个元素都有自己的文本、容器、定位器和尺寸，最后再写共同的问题，不用分别复制几次再拼起来。
+
+你也可以只取其中的定位信息，用来查 DOM、讨论样式，或者辅助编写自动化脚本。候选选择器仍需要在实际页面里验证，页面结构变化后也可能需要调整。
+
+## 怎么开始用
+
+1. 从 Chrome 商店安装扩展，打开需要排查的网页。
+2. 进入元素拾取状态，选中要讨论的元素；涉及多个位置时可以一起选。
+3. 写下想改的地方或遇到的问题，复制生成的上下文。
+4. 粘贴给 AI，或者发到项目讨论里，再结合代码继续排查。
+
+它适合用在前端改页面、测试定位和沟通界面问题这些场景里。把要讨论的位置选出来，再说清楚你想改什么，就可以接着往下排查。
+
+## 关于这个项目
+
+PixPage 是我独立开发的 Chrome 扩展，使用 TypeScript，基于 Manifest V3，目前已上架 Chrome 商店。
+
+这个项目先从一件小事做起：把“我说的是页面上的哪里”讲清楚。后续的使用说明和更新，也会继续整理在这里。
+
+[打开 PixPage 的 Chrome 商店页面 →](https://chromewebstore.google.com/detail/pixpage-%E6%99%BA%E8%83%BD%E5%85%83%E7%B4%A0%E6%8B%BE%E5%8F%96%E5%8A%A9%E6%89%8B/dfoocadjojfjdopgjjdjobgldkffopnm)

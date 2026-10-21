@@ -1,0 +1,87 @@
+---
+import { getProfile } from "../../content/profileData";
+import {
+  Coffee,
+  Network,
+  Database,
+  Code2,
+  PanelsTopLeft,
+  Paintbrush,
+  Chrome,
+  Sparkles,
+  Braces,
+} from "lucide-react";
+
+interface Props {
+  lang?: "zh" | "en";
+}
+
+const { lang = "zh" } = Astro.props;
+const profile = getProfile(lang);
+const skills = profile.skills;
+const skillIcons: Record<string, typeof Coffee> = {
+  Java: Coffee,
+  "RESTful API": Network,
+  "Database Integration": Database,
+  TypeScript: Code2,
+  React: PanelsTopLeft,
+  "Tailwind CSS": Paintbrush,
+  "Chrome Extension Dev": Chrome,
+  "AI API Integration": Sparkles,
+};
+---
+
+<div class="flex flex-col justify-between h-full gap-3 animate-appear py-1">
+  <div>
+    <p class="text-sm font-semibold text-primary mb-1.5">
+      {profile.headLine}
+    </p>
+
+    <p class="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+      {profile.headLine2}
+    </p>
+  </div>
+
+  <div>
+    <p class="text-xs font-medium text-muted-foreground mb-2.5">
+      {lang === "en" ? "Core tech stack & tools" : "核心技术栈与工具"}
+    </p>
+    <ul
+      class="m-0 flex list-none flex-wrap gap-1.5 p-0"
+      aria-label={lang === "en"
+        ? "Core tech stack & tools"
+        : "核心技术栈与工具"}
+    >
+      {
+        skills.map((skill) => {
+          const Icon = skillIcons[skill] || Braces;
+          const isCore = skill === "Java";
+          return (
+            <li
+              class:list={[
+                "inline-flex min-h-7 max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium leading-4",
+                isCore
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-primary/20 bg-primary/5 text-foreground",
+              ]}
+            >
+              <Icon
+                className={`h-3.5 w-3.5 shrink-0 ${isCore ? "" : "text-primary"}`}
+                aria-hidden="true"
+              />
+              <span class="min-w-0 break-words">{skill}</span>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <p class="text-xs text-muted-foreground pt-2 border-t">
+    {
+      lang === "en"
+        ? "Java Architecture · Modern Web · Chrome Extensions · Practical AI"
+        : "Java 后端架构 · 现代 Web 全栈 · Chrome 插件 · 实用 AI 落地"
+    }
+  </p>
+</div>

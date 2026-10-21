@@ -1,0 +1,13 @@
+---
+import QuoteCardWidget from '../react/QuoteCardWidget';
+
+interface Props {
+  lang?: 'zh' | 'en';
+}
+
+const { lang = 'zh' } = Astro.props;
+---
+
+<div class="h-full w-full py-1">
+  <QuoteCardWidget lang={lang} client:load />
+</div>

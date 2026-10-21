@@ -1,0 +1,67 @@
+---
+published: true
+title: "PixPage - Smart Element Picker Assistant (Chrome Extension)"
+description: "A specialized Chrome extension for frontend developers, QA engineers, and AI workflows. Generates robust selectors and structured AI prompts."
+image:
+  url: "/images/projects/pixpage/biker-cover.webp"
+  alt: "PixPage project cover: a mountain biker jumping"
+tags: ["Chrome Extension", "Manifest V3", "TypeScript", "AI Tooling", "Testing"]
+link: "https://chromewebstore.google.com/detail/pixpage-%E6%99%BA%E8%83%BD%E5%85%83%E7%B4%A0%E6%8B%BE%E5%8F%96%E5%8A%A9%E6%89%8B/dfoocadjojfjdopgjjdjobgldkffopnm"
+lang: "en"
+---
+
+# PixPage - Smart Element Picker Assistant
+
+**PixPage** is an independent browser extension published on the **Google Chrome Web Store**, engineered to solve fragile DOM element picking, UI test automation bottlenecks, and context-sharing hurdles when interacting with modern LLMs.
+
+> 🛒 **Available on Store**: [View and Install PixPage on Chrome Web Store ↗](https://chromewebstore.google.com/detail/pixpage-%E6%99%BA%E8%83%BD%E5%85%83%E7%B4%A0%E6%8B%BE%E5%8F%96%E5%8A%A9%E6%89%8B/dfoocadjojfjdopgjjdjobgldkffopnm)
+
+---
+
+## 💡 Why I Built PixPage
+
+During everyday web engineering and automation testing, developers run into frequent frustrations:
+1. **Fragile Selectors**: Auto-generated selectors often rely on deeply nested absolute DOM paths that break the moment UI styles shift.
+2. **Missing Context for AI**: When asking ChatGPT, Claude, or Gemini to diagnose UI glitches, manually gathering tags, computed CSS styles, and bounding rect coordinates is tedious and error-prone.
+3. **Dropdown & Modal Capture Difficulties**: Default inspectors trigger blur events that instantly dismiss hover menus, flyouts, and tooltips.
+
+To eliminate these barriers, I designed PixPage with **resilient selector heuristics** and **seamless AI Prompt formatting**.
+
+---
+
+## ⚡️ Key Highlights
+
+### 1. Robust Anti-Fragile Selector Engine
+- Generates durable locator strategies: semantic IDs, `data-testid` / `data-qa` attributes, text XPath, and clean CSS paths.
+- Avoids generated class hash strings, keeping test scripts resilient against UI updates.
+
+### 2. AI-Ready Prompt Formatting
+- Extracts target tag names, inner text, dimensions, DOM hierarchy, and computed styles in one click.
+- Formats context into structured Markdown ready to paste into LLMs for bug fixing or component scaffolding.
+
+### 3. Free Interaction & Click-Through Mode
+- **`Spacebar`**: Suspends picking mode to freely navigate multi-level dropdowns and popups before locking elements;
+- **Hold `Alt` (Option)**: Temporarily clicks through overlays without interrupting native page interactions.
+
+### 4. DOM Hierarchy Keyboard Navigation
+- **`↑` / `↓` Keys**: Traverses parent and child DOM containers with millisecond accuracy;
+- **`Tab` Key**: Penetrates transparent modal backdrops to isolate hidden underlying targets.
+
+### 5. Multi-Select & Dynamic SPA Tracking
+- Supports multi-element grouping for complex forms;
+- Automatically re-aligns pin markers during dynamic React / Vue SPA rerenders.
+
+---
+
+## 🛠 Tech Stack & Architecture
+
+- **Specification**: Chrome **Manifest V3** with decoupled Content Scripts and lightweight Service Worker;
+- **Zero Bloat**: No background telemetry, no ads, minimal footprint;
+- **Core Stack**: TypeScript + Modern DOM APIs with minimal permission footprint (`activeTab`, `storage`).
+
+---
+
+## 🚀 Get PixPage
+
+Install directly from the official store:
+- 👉 [PixPage on Chrome Web Store](https://chromewebstore.google.com/detail/pixpage-%E6%99%BA%E8%83%BD%E5%85%83%E7%B4%A0%E6%8B%BE%E5%8F%96%E5%8A%A9%E6%89%8B/dfoocadjojfjdopgjjdjobgldkffopnm)

@@ -1,0 +1,46 @@
+---
+import ProjectCard from 'src/components/ProjectCard.astro'
+import { getCollection } from "@/lib/published-content";
+import IndexPageLayout from "../../../layouts/IndexPageLayout.astro";
+
+// read mdx files from posts folder
+const allPosts = await getCollection('posts');
+
+// Filter English posts
+const posts = allPosts.filter((p: any) => p.data.lang === 'en' || !p.data.lang);
+
+// sort posts by startDate DESC
+posts.sort((a: any, b: any) => {
+  return new Date(b.data.startDate).getTime() - new Date(a.data.startDate).getTime();
+});
+---
+
+<IndexPageLayout 
+  title="Blog & Engineering Notes" 
+  description="Reflections on Java backend architecture, modern web development, Chrome extensions, and developer tooling."
+  subTitle="Tech Blog"
+  lang="en"
+>
+  {
+    posts.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {posts.map((entity: any) => (
+          <ProjectCard
+            key={entity.data.title}
+            href={'/en/posts/' + entity.slug}
+            heading={entity.data.title}
+            subheading={entity.data.description}
+            altText={entity?.data?.image?.alt}
+            imagePath={entity?.data?.image?.url}
+            dateStart={entity.data.startDate}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-xl border bg-card p-12 text-center text-muted-foreground shadow-sm">
+        <p class="text-lg font-medium text-foreground">No posts yet</p>
+        <p class="text-sm mt-2 text-muted-foreground">Articles are in progress, please check back later!</p>
+      </div>
+    )
+  }
+</IndexPageLayout>

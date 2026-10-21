@@ -1,0 +1,108 @@
+---
+import { ExternalLink, Sparkles } from "lucide-react";
+import { formateLocalDate } from "../lib/utils";
+
+interface PreviewItem {
+  title: string;
+  description: string;
+  href: string;
+  tags?: string[];
+  date?: Date;
+  externalUrl?: string;
+  latest?: boolean;
+}
+
+interface Props {
+  id: string;
+  items: PreviewItem[];
+  allHref: string;
+  allLabel: string;
+  emptyLabel: string;
+  lang: "zh" | "en";
+}
+
+const { id, items, allHref, allLabel, emptyLabel, lang } = Astro.props;
+---
+
+<div
+  id={id}
+  class="mt-2 flex min-h-[154px] min-w-0 flex-1 flex-col gap-3 scroll-mt-24"
+  data-preview-list
+>
+  <div class="space-y-3">
+    {
+      items.length ? (
+        items.map((item) => (
+          <article
+            class="grid min-w-0 grid-rows-[24px_32px_24px] gap-2"
+            data-preview-item
+          >
+            <div class="flex min-w-0 items-center gap-2">
+              <h3 class="min-w-0 flex-1 text-sm font-semibold leading-6 text-primary">
+                <a
+                  href={item.href}
+                  class="block truncate rounded-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  title={item.title}
+                >
+                  {item.title}
+                </a>
+              </h3>
+              {item.externalUrl ? (
+                <a
+                  href={item.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex h-6 shrink-0 items-center gap-1 rounded border border-primary/30 bg-primary/5 px-2 text-[10px] font-medium text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  title={lang === "en" ? "Open external link" : "打开外链"}
+                >
+                  {lang === "en" ? "Open" : "体验"}
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                </a>
+              ) : (
+                item.latest && (
+                  <span class="inline-flex h-6 shrink-0 items-center gap-1 rounded bg-primary/10 px-2 text-[10px] font-medium text-primary">
+                    <Sparkles className="h-3 w-3" aria-hidden="true" />
+                    {lang === "en" ? "Latest" : "最新"}
+                  </span>
+                )
+              )}
+            </div>
+            <p
+              class="m-0 line-clamp-2 text-xs leading-4 text-muted-foreground"
+              title={item.description}
+            >
+              {item.description}
+            </p>
+            <div class="flex min-w-0 items-center justify-between gap-3">
+              <div class="flex min-w-0 flex-1 gap-1 overflow-hidden">
+                {item.tags?.slice(0, 3).map((tag) => (
+                  <span
+                    class="min-w-0 truncate rounded bg-secondary px-1.5 py-0.5 text-[10px] leading-4 text-secondary-foreground"
+                    title={tag}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              {item.date && (
+                <time
+                  datetime={item.date.toISOString()}
+                  class="shrink-0 text-[11px] text-muted-foreground"
+                >
+                  {formateLocalDate(item.date)}
+                </time>
+              )}
+            </div>
+          </article>
+        ))
+      ) : (
+        <p class="text-sm text-muted-foreground">{emptyLabel}</p>
+      )
+    }
+  </div>
+  <a
+    href={allHref}
+    class="mt-auto inline-flex h-10 w-fit shrink-0 items-center rounded-sm text-xs font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >{allLabel}</a
+  >
+</div>

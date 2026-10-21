@@ -1,0 +1,67 @@
+---
+import { getProfile } from "../../content/profileData";
+import { Wrench, BookOpen, Chrome, Sparkles } from 'lucide-react';
+
+interface Props {
+  lang?: 'zh' | 'en';
+}
+
+const { lang = 'zh' } = Astro.props;
+const profile = getProfile(lang);
+const recommendations = profile.recommendations;
+
+const icons = [Wrench, Chrome, BookOpen];
+---
+
+<section id="recommendations" class="space-y-4 animate-appear scroll-mt-24" aria-label={lang === 'en' ? 'Recommendations and Tools' : '开发利器与推荐'}>
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {recommendations.map((item, index) => {
+      const Icon = icons[index % icons.length] || Sparkles;
+      return (
+        <div class="group relative flex flex-col justify-between rounded-xl border bg-card/60 p-4 transition-all duration-200 hover:border-primary/50 hover:bg-card">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-primary">
+                <Icon className="h-4 w-4" />
+              </span>
+              {item.badge && (
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                  {item.badge}
+                </span>
+              )}
+            </div>
+            <div>
+              <p class="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                {item.category}
+              </p>
+              <h3 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                {item.title}
+              </h3>
+            </div>
+            <p class="text-xs leading-relaxed text-muted-foreground">
+              {item.description}
+            </p>
+          </div>
+          {(item.category.includes('自研') || item.category.includes('Self-Built')) && (
+            <div class="pt-3 border-t border-dashed mt-3 flex items-center justify-between">
+              <a 
+                href="#projects" 
+                class="inline-flex items-center text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                <span>{lang === 'en' ? 'Feature details ↓' : '特性详情 ↓'}</span>
+              </a>
+              <a 
+                href={profile.links.chromeExtension}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+              >
+                <span>{lang === 'en' ? 'Chrome Store ↗' : 'Chrome 应用店 ↗'}</span>
+              </a>
+            </div>
+          )}
+        </div>
+      );
+    })}
+  </div>
+</section>

@@ -1,0 +1,50 @@
+# Dependencies and package manager caches
+node_modules/
+.pnp
+.pnp.*
+.pnpm-store/
+.npm/
+
+# Build outputs and framework caches
+dist/
+.astro/
+build/
+out/
+.next/
+.vercel/
+.netlify/
+coverage/
+*.tsbuildinfo
+env.d.ts
+.prettier-cache
+
+# Local runtime environments and tools
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.idea/
+.vscode/
+.DS_Store
+._*
+*.log
+
+# Local environment configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+.aws/
+
+# Local operation notes and deployment verification artifacts
+/DEPLOY.md
+/changes.md
+/infra/validation/
+/infra/ec2-verification-test.yaml
+
+# Temporary verification output
+/output/
+/playwright-report/
+/test-results/

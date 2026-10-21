@@ -1,0 +1,91 @@
+---
+import { buttonVariants } from "../components/ui/button";
+import { ModeToggle } from "../components/react/ThemeToggle";
+import { LanguageToggle } from "../components/react/LanguageToggle";
+import { AccentThemeToggle } from "../components/react/AccentThemeToggle";
+import { getProfile } from "../content/profileData";
+import { useTranslations } from "../i18n/utils";
+
+interface Props {
+  lang?: "zh" | "en";
+}
+
+const { lang = "zh" } = Astro.props;
+const profile = getProfile(lang);
+const sections = profile.sections;
+const t = useTranslations(lang);
+
+const homePath = lang === "en" ? "/en" : "/";
+const postsPath = lang === "en" ? "/en/posts" : "/posts";
+const projectsPath = lang === "en" ? "/en/projects" : "/projects";
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+  <div
+    class="container flex min-h-16 flex-wrap items-center justify-between gap-y-1 px-4 py-2 sm:flex-nowrap sm:px-8"
+  >
+    <div class="flex gap-4 md:gap-8">
+      <a href={homePath} class="flex items-center space-x-2">
+        <span
+          class="inline-block font-bold text-lg hover:text-primary transition-colors"
+          >{profile.name}</span
+        >
+      </a>
+    </div>
+    <div class="flex items-center space-x-1 sm:space-x-2">
+      <nav class="flex items-center space-x-0.5 sm:space-x-1">
+        {
+          sections.recommendations && (
+            <a
+              href={`${homePath}#recommendations`}
+              class={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              {t("nav.recommendations")}
+            </a>
+          )
+        }
+        {
+          sections.projects && (
+            <a
+              href={projectsPath}
+              class={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              {t("nav.projects")}
+            </a>
+          )
+        }
+        {
+          sections.blog && (
+            <a
+              href={postsPath}
+              class={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              {t("nav.blog")}
+            </a>
+          )
+        }
+        {
+          profile.links?.github && (
+            <a
+              href={profile.links.github}
+              target="_blank"
+              rel="noreferrer"
+              class={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              GitHub
+            </a>
+          )
+        }
+
+        {/* 中英文切换按钮 */}
+        <LanguageToggle currentLang={lang} client:load />
+        <AccentThemeToggle lang={lang} client:load />
+
+        {/* 明暗模式切换按钮 */}
+        <ModeToggle transition:persist client:load />
+      </nav>
+    </div>
+  </div>
+</header>

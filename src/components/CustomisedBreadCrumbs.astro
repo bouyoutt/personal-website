@@ -1,0 +1,80 @@
+---
+interface Props {
+  lang?: "zh" | "en";
+  currentTitle?: string;
+}
+
+const { lang = "zh", currentTitle } = Astro.props;
+const prefix = lang === "en" ? "/en" : "";
+const segments = Astro.url.pathname.split("/").filter(Boolean);
+if (segments[0] === "en") segments.shift();
+
+const sections: Record<string, { zh: string; en: string }> = {
+  projects: { zh: "作品", en: "Projects" },
+  posts: { zh: "博客", en: "Blog" },
+  tags: { zh: "标签", en: "Tags" },
+  books: { zh: "阅读", en: "Books" },
+  experiences: { zh: "经历", en: "Experience" },
+};
+
+const crumbs: { label: string; href?: string }[] = [
+  { label: lang === "en" ? "Home" : "首页", href: `${prefix}/` },
+];
+const section = sections[segments[0]];
+if (section) {
+  crumbs.push({
+    label: section[lang],
+    href: segments.length > 1 ? `${prefix}/${segments[0]}` : undefined,
+  });
+}
+if (segments.length > 1 || !section) {
+  crumbs.push({
+    label: currentTitle || (lang === "en" ? "Current page" : "当前页面"),
+  });
+}
+---
+
+<nav
+  aria-label={lang === "en" ? "Breadcrumb" : "面包屑导航"}
+  class="flex max-w-full"
+>
+  <ol
+    class="m-0 flex min-w-0 list-none items-center gap-3 p-0 text-xs leading-5 sm:gap-4"
+  >
+    {
+      crumbs.map((crumb, index) => (
+        <li
+          class:list={[
+            "flex min-w-0 items-center gap-3 sm:gap-4",
+            index === crumbs.length - 1 ? "flex-1" : "shrink-0",
+          ]}
+        >
+          {index > 0 && (
+            <span
+              class="shrink-0 select-none text-muted-foreground/60"
+              aria-hidden="true"
+            >
+              /
+            </span>
+          )}
+          {crumb.href ? (
+            <a
+              href={crumb.href}
+              class="inline-flex min-h-11 shrink-0 items-center rounded-sm text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+            >
+              {crumb.label}
+            </a>
+          ) : (
+            <span
+              aria-current="page"
+              title={crumb.label}
+              class="flex min-h-11 min-w-0 items-center font-medium text-foreground/80"
+            >
+              <span class="truncate">{crumb.label}</span>
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

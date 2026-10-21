@@ -1,0 +1,84 @@
+---
+import { accentThemes, accentStorageKey } from "../lib/accent-themes";
+
+const paletteCSS = accentThemes
+  .map(
+    (theme) => `
+  :root[data-accent="${theme.id}"] {
+    --primary: ${theme.light};
+    --primary-foreground: 0 0% 100%;
+    --ring: ${theme.light};
+    --chart-1: ${theme.light};
+  }
+  :root.dark[data-accent="${theme.id}"] {
+    --primary: ${theme.dark};
+    --primary-foreground: 20 14.3% 4.1%;
+    --ring: ${theme.dark};
+    --chart-1: ${theme.dark};
+  }
+`,
+  )
+  .join("");
+const accentIds = accentThemes.map((theme) => theme.id);
+---
+
+<style is:inline set:html={paletteCSS}></style>
+<script is:inline define:vars={{ accentIds, accentStorageKey }}>
+  // Restore before paint, including Astro's client-side document swaps.
+  (() => {
+    const restore = (root) => {
+      let mode;
+      let accent;
+      try {
+        mode = localStorage.getItem("theme");
+        accent = localStorage.getItem(accentStorageKey);
+      } catch {}
+      root.classList.toggle(
+        "dark",
+        mode === "dark" ||
+          (mode !== "light" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches),
+      );
+      root.dataset.accent = accentIds.includes(accent) ? accent : "orange";
+    };
+    restore(document.documentElement);
+    let iconRequest = 0;
+    const updateIcon = async () => {
+      const request = ++iconRequest;
+      const accent = document.documentElement.dataset.accent;
+      const icon = document.querySelector("link[data-theme-icon]");
+      if (!icon) return;
+      const href = `/favicons/${accentIds.includes(accent) ? accent : "orange"}.png?v=me-loaded-20261021`;
+      if (icon.getAttribute("href") === href) return;
+      // Keep the existing icon until the next bitmap has loaded and decoded.
+      const bitmap = new Image();
+      bitmap.src = href;
+      try {
+        await bitmap.decode();
+      } catch {
+        return;
+      }
+      if (request !== iconRequest) return;
+      const currentIcon = document.querySelector("link[data-theme-icon]");
+      if (!currentIcon) return;
+      const nextIcon = currentIcon.cloneNode();
+      nextIcon.setAttribute("href", href);
+      nextIcon.setAttribute("type", "image/png");
+      nextIcon.setAttribute("sizes", "64x64");
+      currentIcon.replaceWith(nextIcon);
+    };
+    updateIcon();
+    if (!window.__themePreferencesReady) {
+      document.addEventListener("astro:before-swap", (event) =>
+        restore(event.newDocument.documentElement),
+      );
+      const iconObserver = new MutationObserver(updateIcon);
+      iconObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-accent"],
+      });
+      document.addEventListener("astro:after-swap", updateIcon);
+      window.__themePreferencesReady = true;
+    }
+  })();
+</script>

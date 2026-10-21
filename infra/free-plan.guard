@@ -1,0 +1,55 @@
+# Project billing and security invariants, in addition to unmodified AWS rules.
+# Apply this file separately to each of the two templates.
+rule origin_stays_private when Resources.SiteBucket exists {
+    Resources.SiteBucket.Properties.PublicAccessBlockConfiguration {
+        BlockPublicAcls == true
+        IgnorePublicAcls == true
+        BlockPublicPolicy == true
+        RestrictPublicBuckets == true
+    }
+    Resources.SiteBucket.Properties.OwnershipControls.Rules[0].ObjectOwnership == 'BucketOwnerEnforced'
+    Resources.SiteBucket.Properties.BucketEncryption exists
+    Resources.SiteBucket.DeletionPolicy == 'Retain'
+    Resources.SiteBucket.UpdateReplacePolicy == 'Retain'
+}
+rule initial_origin_grant_is_empty when Resources.SiteBucket exists {
+    Parameters.CloudFrontDistributionArn.Default == ''
+    Resources.SiteBucketPolicy.Properties.PolicyDocument.Statement[0].'Fn::If' exists
+}
+rule subscription_is_free_only when Resources.FreeSubscription exists {
+    Resources.FreeSubscription.Type == 'AWS::PricingPlanManager::Subscription'
+    Resources.FreeSubscription.Properties.PlanFamily == 'CloudFront'
+    Resources.FreeSubscription.Properties.PlanTier == 'FREE'
+    Resources.FreeSubscription.Properties.ResourceArns[0].'Fn::Sub' exists
+    Resources.FreeSubscription.Properties.ResourceArns[1].'Fn::GetAtt' == 'SiteWebACL.Arn'
+    Resources.FreeSubscription.DeletionPolicy == 'Retain'
+    Parameters.PlanTier not exists
+}
+rule initial_distribution_is_disabled when Resources.Distribution exists {
+    Parameters.ServeTraffic.Default == 'false'
+    Resources.Distribution.Properties.DistributionConfig.Enabled.Ref == 'ServeTraffic'
+}
+rule managed_policies_only when Resources.Distribution exists {
+    Resources.*.Type != 'AWS::CloudFront::CachePolicy'
+    Resources.*.Type != 'AWS::CloudFront::ResponseHeadersPolicy'
+    Resources.Distribution.Properties.DistributionConfig.DefaultCacheBehavior.CachePolicyId.Ref == 'ManagedCachePolicyId'
+    Resources.Distribution.Properties.DistributionConfig.DefaultCacheBehavior.ResponseHeadersPolicyId.Ref == 'ManagedSecurityHeadersPolicyId'
+}
+rule waf_is_attached_and_rate_review_is_explicit when Resources.SiteWebACL exists {
+    Resources.SiteWebACL.Properties.Scope == 'CLOUDFRONT'
+    Resources.Distribution.Properties.DistributionConfig.WebACLId.'Fn::GetAtt' == 'SiteWebACL.Arn'
+    Resources.SiteWebACL.Properties.Rules[0].Statement.RateBasedStatement.AggregateKeyType == 'IP'
+    Resources.SiteWebACL.Properties.Rules[0].Statement.RateBasedStatement.EvaluationWindowSec == 300
+    Resources.SiteWebACL.Properties.Rules[0].Action.'Fn::If' exists
+    Parameters.RateLimitMode.Default == 'COUNT'
+}
+rule no_public_s3_website_origin when Resources.Distribution exists {
+    Resources.Distribution.Properties.DistributionConfig.Origins[0].OriginAccessControlId.Ref == 'OriginAccessControl'
+    Resources.OriginAccessControl.Properties.OriginAccessControlConfig.SigningBehavior == 'always'
+    Resources.Distribution.Properties.DistributionConfig.Origins[0].CustomOriginConfig not exists
+}
+rule access_logs_avoid_sensitive_fields when Resources.AccessLogDelivery exists {
+    Resources.AccessLogDelivery.Properties.RecordFields[*] not in ['cs-uri-query', 'cs(Cookie)', 'cs(Referer)', 'cs(User-Agent)']
+    Resources.AccessLogs.Properties.RetentionInDays == 7
+    Resources.AccessLogs.Condition == 'TrafficEnabled'
+}

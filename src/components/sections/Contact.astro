@@ -1,0 +1,114 @@
+---
+import { getProfile } from "../../content/profileData";
+import { Mail, Github, Linkedin, ExternalLink } from 'lucide-react';
+import { TelegramIcon, XIcon } from '../icons/SocialIcons';
+import { WeChatContact } from '../react/WeChatContact';
+
+interface Props {
+  lang?: 'zh' | 'en';
+}
+
+const { lang = 'zh' } = Astro.props;
+const profile = getProfile(lang);
+---
+
+<div id="contact" class="flex flex-col justify-between h-full w-full gap-4 animate-appear py-1 scroll-mt-24">
+  <div>
+    <p class="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+      {lang === 'en'
+        ? "Whether you want to chat about Java architectures, discuss modern web tech and Chrome extensions, or just connect, feel free to drop me a note."
+        : "无论是探讨 Java 后端工程、交流前端与 Chrome 插件开发心得，还是有有趣的技术想法，都欢迎随时与我联系。"}
+    </p>
+    {profile.links?.email && (
+      <a 
+        href={profile.links.email}
+        class="inline-flex items-center gap-2 mt-3 text-primary hover:underline font-semibold text-sm group"
+      >
+        <Mail className="h-4 w-4 transition-transform group-hover:scale-110" />
+        <span>{profile.links.email.replace('mailto:', '')}</span>
+      </a>
+    )}
+  </div>
+
+  <div>
+    <p class="text-xs font-medium text-foreground mb-2">
+      {lang === 'en' ? 'Connect & Profiles:' : '平台与社交链接:'}
+    </p>
+    <div class="flex flex-wrap items-center gap-2">
+      {profile.links?.telegram && (
+        <a 
+          href={profile.links.telegram} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border bg-card hover:bg-accent hover:text-[#229ED9] transition-colors font-medium shadow-sm"
+        >
+          <TelegramIcon className="h-3.5 w-3.5" />
+          <span>Telegram</span>
+        </a>
+      )}
+      {(profile.links?.x || profile.links?.twitter) && (
+        <a 
+          href={profile.links.x || profile.links.twitter} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border bg-card hover:bg-accent transition-colors font-medium shadow-sm"
+        >
+          <XIcon className="h-3.5 w-3.5" />
+          <span>X (Twitter)</span>
+        </a>
+      )}
+      {profile.links?.wechat && (
+        <WeChatContact 
+          client:load 
+          wechatId={profile.links.wechat} 
+          qrCode={profile.links.wechatQrCode} 
+          lang={lang} 
+        />
+      )}
+      {profile.links?.github && (
+        <a 
+          href={profile.links.github} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border bg-card hover:bg-accent transition-colors font-medium shadow-sm"
+        >
+          <Github className="h-3.5 w-3.5" />
+          <span>GitHub</span>
+        </a>
+      )}
+      {profile.links?.fiverr && (
+        <a 
+          href={profile.links.fiverr} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border bg-card hover:bg-accent transition-colors font-medium shadow-sm"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          <span>Fiverr</span>
+        </a>
+      )}
+      {profile.links?.linkedin && (
+        <a 
+          href={profile.links.linkedin} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border bg-card hover:bg-accent transition-colors font-medium shadow-sm"
+        >
+          <Linkedin className="h-3.5 w-3.5" />
+          <span>LinkedIn</span>
+        </a>
+      )}
+      {profile.repo && (
+        <a 
+          href={profile.repo} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md border bg-card hover:bg-accent transition-colors font-medium shadow-sm"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          <span>{lang === 'en' ? 'Source Repo' : '本站仓库'}</span>
+        </a>
+      )}
+    </div>
+  </div>
+</div>
