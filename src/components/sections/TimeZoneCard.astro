@@ -1,12 +1,52 @@
 ---
-import NowTime from '../react/NowTime'
-const {timezone = null} = Astro.props
-
+const { timezone } = Astro.props;
 ---
 
-<div class="p-1 flex flex-row items-center gap-2 animate-appear">
-  <NowTime timezone={timezone} client:load />
+<div class="p-1 flex flex-row items-center gap-2 animate-appear" data-clock data-timezone={timezone}>
+  <div class="min-h-[100px]">
+    <p data-clock-date aria-live="off">&nbsp;</p>
+    <p data-clock-time class="text-2xl my-2 tabular-nums" aria-live="off">--:--:--</p>
+    <p data-clock-zone class="text-sm text-gray-500">{timezone || '…'}</p>
+  </div>
+  {!timezone && (
+    <span class="relative flex h-3 w-3">
+      <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+      <span class="relative inline-flex h-3 w-3 rounded-full bg-green-500"></span>
+    </span>
+  )}
 </div>
 
-
-
+<script>
+  let timer: ReturnType<typeof setInterval> | undefined;
+  function stopClocks() {
+    clearInterval(timer);
+  }
+  function startClocks() {
+    stopClocks();
+    const clocks = Array.from(document.querySelectorAll<HTMLElement>('[data-clock]')).map(element => {
+      const timezone = element.dataset.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const date = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone, weekday: 'short', month: 'short', day: '2-digit', year: 'numeric',
+      });
+      const time = new Intl.DateTimeFormat('en-GB', {
+        timeZone: timezone, hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+      });
+      element.querySelector('[data-clock-zone]')!.textContent = timezone;
+      return { element, date, time };
+    });
+    function update() {
+      const now = new Date();
+      for (const { element, date, time } of clocks) {
+        const parts = date.formatToParts(now);
+        const part = (type: string) => parts.find(item => item.type === type)?.value;
+        element.querySelector('[data-clock-date]')!.textContent = `${part('weekday')} ${part('month')} ${part('day')} ${part('year')}`;
+        element.querySelector('[data-clock-time]')!.textContent = time.format(now);
+      }
+    }
+    update();
+    if (clocks.length) timer = setInterval(update, 1000);
+  }
+  startClocks();
+  document.addEventListener('astro:page-load', startClocks);
+  document.addEventListener('astro:before-swap', stopClocks);
+</script>

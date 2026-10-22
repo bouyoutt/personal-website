@@ -10,6 +10,10 @@ tags: ["随笔", "独立开发", "Java", "Web"]
 lang: "zh"
 ---
 
+import { Image } from 'astro:assets';
+import warmMountains from '../../../public/images/posts/hello-world/warm-mountains.webp';
+import duskMountains from '../../../public/images/posts/hello-world/dusk-mountains.webp';
+
 网站搭起来了，总得写点什么。
 
 第一篇先不讲技术。介绍一下自己，也说说这个网站准备拿来干什么。
@@ -17,7 +21,7 @@ lang: "zh"
 我叫 bouyout，主要做 Java 后端，也做一些前端和全栈开发。最近在整理自己的项目和资料，这个小站就是其中一部分。你现在能看到的内容还不多，先把它放出来，后面慢慢补。
 
 <figure>
-  <img src="/images/posts/hello-world/warm-mountains.webp" alt="夕阳把前景的草坡染成橙色，远处是层层山峦" width="1169" height="780" fetchpriority="high" decoding="async" className="rounded-xl" />
+  <Image src={warmMountains} widths={[400, 800, 1169]} sizes="(max-width: 768px) calc(100vw - 48px), 800px" format="webp" quality={75} loading="eager" alt="夕阳把前景的草坡染成橙色，远处是层层山峦" width="1169" height="780" fetchpriority="high" decoding="async" class="rounded-xl" />
   <figcaption>配图：<a href="https://unsplash.com/photos/mountain-ridges-under-warm-sky-ibikgDapcp4">Sven Pieren / Unsplash</a></figcaption>
 </figure>
 
@@ -40,7 +44,7 @@ lang: "zh"
 这个网站还会继续调整，PixPage 也有不少东西可以展开写。后面可以单独聊聊它的使用方式和实现，第一篇就先不塞太多内容了。
 
 <figure>
-  <img src="/images/posts/hello-world/dusk-mountains.webp" alt="粉紫色天空下的岩石山脊与山谷" width="1032" height="581" loading="lazy" decoding="async" className="rounded-xl" />
+  <Image src={duskMountains} widths={[400, 800, 1032]} sizes="(max-width: 768px) calc(100vw - 48px), 800px" format="webp" quality={75} alt="粉紫色天空下的岩石山脊与山谷" width="1032" height="581" loading="lazy" decoding="async" class="rounded-xl" />
   <figcaption>配图：<a href="https://unsplash.com/photos/landscape-photography-of-mountain-ranges-under-purple-and-pink-skies--g7axSVst6Y">Štefan Štefančík / Unsplash</a></figcaption>
 </figure>
 

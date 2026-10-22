@@ -33,6 +33,8 @@ export default function QuoteCardWidget({ lang = 'zh' }: Props) {
   const [resetKey, setResetKey] = useState(0);
 
   const switchQuote = useCallback(() => {
+    // Reuse the full category set once background downloads have completed.
+    void loadQuotes(lang).then(setQuotes).catch(() => {});
     if (!quotes.length) return;
     setIsRotating(true);
     setIsAnimating(true);
@@ -51,7 +53,7 @@ export default function QuoteCardWidget({ lang = 'zh' }: Props) {
     setTimeout(() => {
       setIsRotating(false);
     }, 600);
-  }, [quotes.length]);
+  }, [quotes.length, lang]);
 
   // 初始化时随机挑选一句，避免每次刷新都是第一句
   useEffect(() => {
@@ -197,7 +199,7 @@ export default function QuoteCardWidget({ lang = 'zh' }: Props) {
           href="https://sentences-bundle.hitokoto.cn/"
           target="_blank"
           rel="noopener noreferrer"
-          title={lang === 'zh' ? '在线加载一言官方句子包' : 'Loaded from the official Hitokoto sentence bundles'}
+          title={lang === 'zh' ? '来自一言官方句子包，浏览器缓存 24 小时' : 'Official Hitokoto bundles, cached in this browser for 24 hours'}
           className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/75 hover:text-primary transition-colors"
         >
           <span>{lang === 'zh' ? '句库：一言' : 'Source: Hitokoto'}</span>

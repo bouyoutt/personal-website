@@ -1,7 +1,7 @@
 /**
  * Load the official Hitokoto sentence bundles directly by URL.
  * No copied dataset is bundled with the site. A page session reuses its download;
- * a new page load revalidates the upstream files (subject to upstream caching).
+ * a repeat visit reuses a small browser cache for up to 24 hours.
  * Usage terms: https://sentences-bundle.hitokoto.cn/
  */
 export interface QuoteItem {
@@ -17,7 +17,41 @@ const origins = [
   'https://sentences-bundle.hitokoto.cn',
   'https://cdn.jsdelivr.net/gh/hitokoto-osc/sentences-bundle@latest',
 ];
-let bundleRequest: Promise<QuoteItem[]> | undefined;
+const requests = new Map<string, Promise<QuoteItem[]>>();
+const CACHE_TTL = 24 * 60 * 60 * 1000;
+const cacheKey = (lang: string) => `hitokoto-quotes-v1-${lang}`;
+
+function isQuote(item: unknown): item is QuoteItem {
+  if (!item || typeof item !== 'object') return false;
+  const row = item as QuoteItem;
+  return typeof row.id === 'string' && typeof row.quote === 'string' && !!row.quote.trim()
+    && typeof row.from === 'string' && !!row.from.trim()
+    && (row.author === undefined || typeof row.author === 'string')
+    && ['movie', 'novel', 'philosophy'].includes(row.category);
+}
+
+function readCache(lang: string): QuoteItem[] | undefined {
+  try {
+    const cached = JSON.parse(localStorage.getItem(cacheKey(lang)) || 'null');
+    if (cached && typeof cached.savedAt === 'number'
+      && Date.now() >= cached.savedAt && Date.now() - cached.savedAt < CACHE_TTL
+      && Array.isArray(cached.quotes) && cached.quotes.length && cached.quotes.every(isQuote)) {
+      return cached.quotes;
+    }
+  } catch { /* Storage can be unavailable in private browsing. */ }
+}
+
+function saveCache(lang: string, quotes: QuoteItem[]) {
+  try {
+    // Interleave categories so the capped cache retains each available category.
+    const groups = Object.values(categories).map(category => quotes.filter(item => item.category === category));
+    const sample: QuoteItem[] = [];
+    for (let i = 0; sample.length < 150 && groups.some(group => i < group.length); i++) {
+      for (const group of groups) if (group[i] && sample.length < 150) sample.push(group[i]);
+    }
+    localStorage.setItem(cacheKey(lang), JSON.stringify({ savedAt: Date.now(), quotes: sample }));
+  } catch { /* A storage failure must not prevent showing downloaded quotes. */ }
+}
 
 async function loadCategory(key: keyof typeof categories): Promise<QuoteItem[]> {
   for (const origin of origins) {
@@ -26,7 +60,7 @@ async function loadCategory(key: keyof typeof categories): Promise<QuoteItem[]> 
     try {
       const response = await fetch(`${origin}/sentences/${key}.json`, {
         signal: controller.signal,
-        cache: 'no-cache',
+        cache: 'default',
       });
       if (!response.ok) throw new Error(`Sentence bundle HTTP ${response.status}`);
       const data: unknown = await response.json();
@@ -58,29 +92,42 @@ async function loadCategory(key: keyof typeof categories): Promise<QuoteItem[]> 
 }
 
 export async function loadQuotes(lang: 'zh' | 'en' = 'zh'): Promise<QuoteItem[]> {
-  if (!bundleRequest) {
-    bundleRequest = Promise.all(
-      (Object.keys(categories) as (keyof typeof categories)[]).map(loadCategory),
-    ).then(groups => {
-      const seen = new Set<string>();
-      const quotes = groups.flat().filter(item => {
+  const existing = requests.get(lang);
+  if (existing) return existing;
+  const cached = readCache(lang);
+  if (cached) return cached;
+
+  const tasks = (Object.keys(categories) as (keyof typeof categories)[]).map(async key => {
+    const items = (await loadCategory(key)).filter(item => lang === 'en'
+      ? /[a-zA-Z]/.test(item.quote) && !/\p{Script=Han}/u.test(item.quote)
+      : /\p{Script=Han}/u.test(item.quote));
+    if (!items.length) throw new Error('No sentences for this language');
+    return items;
+  });
+
+  // Display the first usable category without waiting for the slowest host/file.
+  const first = Promise.any(tasks).then(items => {
+    saveCache(lang, items);
+    return items;
+  }).catch(error => {
+    requests.delete(lang);
+    throw error;
+  });
+  requests.set(lang, first);
+
+  // Let the other categories finish in the background for subsequent switches/visits.
+  void Promise.allSettled(tasks).then(results => {
+    const seen = new Set<string>();
+    const all = results.flatMap(result => result.status === 'fulfilled' ? result.value : [])
+      .filter(item => {
         if (seen.has(item.quote)) return false;
         seen.add(item.quote);
         return true;
       });
-      if (!quotes.length) throw new Error('Sentence bundles unavailable');
-      return quotes;
-    }).catch(error => {
-      bundleRequest = undefined; // Allow a retry after a network failure.
-      throw error;
-    });
-  }
-  const quotes = await bundleRequest;
-  // The upstream has no language field. Keep English-page text Latin-script;
-  // do not imply that the Chinese dataset has translated equivalents.
-  const localized = quotes.filter(item => lang === 'en'
-    ? /[a-zA-Z]/.test(item.quote) && !/\p{Script=Han}/u.test(item.quote)
-    : /\p{Script=Han}/u.test(item.quote));
-  if (!localized.length) throw new Error('No sentences for this language');
-  return localized;
+    if (all.length) {
+      requests.set(lang, Promise.resolve(all));
+      saveCache(lang, all);
+    }
+  });
+  return first;
 }

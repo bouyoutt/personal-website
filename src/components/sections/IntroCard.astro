@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import workstation from '../../../public/developer-workstation.png';
 import { Button } from '../ui/button'
 import { getProfile } from "../../content/profileData";
 import { Github, Mail, Linkedin, Server, Layout, Bot, Zap, Chrome, ExternalLink } from 'lucide-react'
@@ -132,8 +134,15 @@ const icons = [Server, Layout, Chrome, Bot, Zap];
   </div>
 
   <div class="hidden sm:flex flex-shrink-0 items-center justify-center pr-2">
-    <img
-      src={profile.avatarUrl}
+    <Image
+      src={profile.avatarUrl === "/developer-workstation.png" ? workstation : profile.avatarUrl}
+      width={288}
+      height={288}
+      widths={[144, 288]}
+      sizes="(min-width: 768px) 144px, 128px"
+      format="webp"
+      loading="eager"
+      fetchpriority="high"
       class="h-32 w-32 md:h-36 md:w-36 rounded-2xl object-cover shadow-md border hover:scale-105 transition-transform duration-300"
       alt="Developer Workstation Avatar"
     />
