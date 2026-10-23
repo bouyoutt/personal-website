@@ -1,60 +1,61 @@
 ---
 published: true
-title: "Hello World: Why I Built This Digital Garden and My First Blog Post"
+title: "Hello, This Little Site Is Open"
 startDate: 2026-10-21
-description: "A casual reflection on why I built an independent personal website, my everyday engineering journey, and what I plan to share here."
+description: "A home for my projects and development notes. For this first post, a quick introduction and a few thoughts on the site."
 image:
-  url: "/developer-workstation.png"
-  alt: "Developer digital workstation"
-tags: ["Essay", "Indie Dev", "Thoughts", "Java", "Web"]
+  url: "/images/posts/hello-world/warm-mountains.webp"
+  alt: "Mountain ridges beneath a warm sky, photographed by Sven Pieren"
+tags: ["Essay", "Indie Dev", "Java", "Web"]
 lang: "en"
 ---
 
-# Hello World: Why I Built This Digital Garden and My First Blog Post
+import { Image } from 'astro:assets';
+import warmMountains from '../../../public/images/posts/hello-world/warm-mountains.webp';
+import duskMountains from '../../../public/images/posts/hello-world/dusk-mountains.webp';
 
-Hey there! Really glad you stumbled across my little corner of the internet. 👋
+The site is up, so I suppose it's time to write something.
 
-As programmer tradition dictates, every meaningful new beginning starts with a simple `Hello, World!`. Since this is my very first real post on this personal site, let's skip dry academic lectures. Grab a coffee, and let's have a casual chat about why I built this space and what I've been hacking on lately.
+For this first post, I'll leave the technical details for later. Here's a little about me and what I plan to use this site for.
 
----
+I'm bouyout. I mainly work on Java backends, along with some frontend and full-stack development. Lately, I've been organizing my projects and notes, and this site is part of that. There isn't much here yet. I'm putting it out there now and will add more over time.
 
-## Why build an independent website in 2026?
+<figure>
+  <Image src={warmMountains} widths={[400, 800, 1169]} sizes="(max-width: 768px) calc(100vw - 48px), 800px" format="webp" quality={75} loading="eager" alt="Sunset turns the grassy slope orange, with layers of mountains in the distance" width="1169" height="780" fetchpriority="high" decoding="async" class="rounded-xl" />
+  <figcaption>Photo: <a href="https://unsplash.com/photos/mountain-ridges-under-warm-sky-ibikgDapcp4">Sven Pieren / Unsplash</a></figcaption>
+</figure>
 
-People often ask: *"With so many social networks, dev communities, and freelancing platforms around, why spend weekends writing code to host your own site?"*
+## Why build a separate website?
 
-My answer is straightforward: **On third-party platforms, you are a tenant; on your own domain, you are the homeowner.**
+Mostly, I wanted to keep things in one place.
 
-Most platforms lock you into algorithmic feeds, character limits, or rigid commercial templates. On service marketplaces, every page is plastered with pricing tiers, delivery days, and formal scopes—feeling more like a cold legal contract than a creative space. But as an engineer, beyond client deliverables, I craved a quiet corner with zero algorithmic noise. A place where I can showcase projects I'm genuinely proud of and write down hard-earned lessons.
+Projects I've worked on, small tools I've built, and notes from development all need somewhere I can find them again. Anyone curious about what I'm doing can take a look, and it'll be easier for me to come back and find things later, too.
 
-This website is my personal digital garden.
+The blog serves the same purpose. Sometimes I solve a problem and think I'll remember the solution, only to look it all up again a while later. If I write down the problem, what I tried, and what eventually worked, at least I'll know where to start next time.
 
----
+So there isn't an elaborate plan for this place yet. First, explain the projects clearly, then write a few notes that I'll find useful later.
 
-## What do I actually work on?
+## A small tool I've built
 
-For those getting to know me, my core foundation has always been **Java backend engineering**.
-My main focus is Java backend development, alongside frontend and full-stack work. This space is where I want to share development notes, practical experiments, and topics I am still learning.
+One project already on the site is [PixPage - Smart Element Picker Assistant](/en/projects/chrome-extension-en), a browser extension published on the Chrome Web Store.
 
-Yet curiosity keeps pushing me forward:
-- **Venturing into Modern Web & Full-Stack**: People used to joke that backend devs build interfaces that "work, but look like 1998." I decided to change that, diving deep into modern web standards, React, Tailwind CSS, and Astro. Breathing life into an interface from design to subtle interaction feels uniquely satisfying.
-- **Crafting Everyday Productivity Tools**: During testing and frontend debugging, fragile DOM selectors and manual style extraction for LLMs were constant pain points. Instead of tolerating tedious workarounds, I built **PixPage - Smart Element Picker Assistant** (now published on the Chrome Web Store). Building a real tool that you and other developers rely on daily is pure developer joy.
-- **Pragmatic AI Tooling**: I am exploring practical AI API integrations and automation. I don't buy into wild hype, but treat AI as a tireless copilot that frees up brainpower for real problem-solving.
+It does something specific: select an element on a web page, extract its locator information, and organize that information into context you can send straight to an AI tool. For example, if you want to point out that “this button is in the wrong place,” you can include the element, its selectors, and the page information together, instead of relying entirely on a written description of where it is.
 
----
+I'll keep refining this website, and there's plenty more I could write about PixPage. A separate post can cover how to use it and how it works. I'll keep this first one brief.
 
-## What will you find on this blog?
+<figure>
+  <Image src={duskMountains} widths={[400, 800, 1032]} sizes="(max-width: 768px) calc(100vw - 48px), 800px" format="webp" quality={75} alt="Rocky mountain ridges and valleys beneath a pink and purple sky" width="1032" height="581" loading="lazy" decoding="async" class="rounded-xl" />
+  <figcaption>Photo: <a href="https://unsplash.com/photos/landscape-photography-of-mountain-ranges-under-purple-and-pink-skies--g7axSVst6Y">Štefan Štefančík / Unsplash</a></figcaption>
+</figure>
 
-I want this space to remain authentic and practical:
-1. **Real-world Debugging Stories**: Strange concurrency deadlocks, mysterious memory leaks, and query optimization battles worth remembering.
-2. **Toolbox & Recommendations**: Tested open-source utilities, developer setups, and insights from building Chrome extensions.
-3. **Engineering Philosophy & Reflections**: Candid thoughts on software craftsmanship, simplicity, and architectural trade-offs.
+## What I'll write about next
 
----
+Probably whatever I'm working on at the time: problems I run into with Java backends, little details from connecting frontends and backends, Chrome extension development notes, and experiments with AI tools.
 
-## Closing Thoughts
+Not every post needs to cover a whole topic. Sometimes explaining one small problem and sharing a working solution is enough. I can also note things I haven't figured out yet and come back to them later.
 
-No matter how much code we ship, technology exists to solve real problems for real people.
+As for how often I'll post, I won't set a weekly target just yet. Finish this one, then write the next.
 
-If anything here resonates with you, or if you're curious about the tools I build, feel free to drop me an email or say hi through any of the links below.
+If you came here from PixPage or one of my social profiles, feel free to look around. If you'd like to chat, you can find my [Telegram](https://t.me/bouyoutt) and [X](https://x.com/bouyoutt) on the homepage.
 
-Cheers to building cool things! See you in the next post. 🎉
+That's all for now.
